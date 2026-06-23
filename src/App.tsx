@@ -309,35 +309,31 @@ const [positions, setPositions] = useState<any[]>(() => {
     fileInputRef.current?.click();
   };
 
-  const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (!file || !clickedImageRef.current) return;
-
-    const imageId = clickedImageRef.current;
-
-    // Hiển thị preview tạm bằng blob URL trong lúc upload
-    const blobUrl = URL.createObjectURL(file);
-    setCustomImages(prev => ({ ...prev, [imageId]: blobUrl }));
-
-    try {
-      // Upload lên ImageKit – chỉ lưu URL ngắn, không lưu base64
-      const formData = new FormData();
-      formData.append('file', file);
-      formData.append('fileName', `${imageId}_${Date.now()}`);
-      formData.append('folder', '/md-home-smart');
-
-      const authRes = await fetch('/api/imagekit-auth');
-const auth = await authRes.json();
-
-formData.append('publicKey', 'public_nWAwaKXSj2CjbCBwW6bbtnOI2Z8=');
-formData.append('signature', auth.signature);
-formData.append('expire', String(auth.expire));
-formData.append('token', auth.token);
-
-const response = await fetch('https://upload.imagekit.io/api/v1/files/upload', {
-  method: 'POST',
-  body: formData,
-});
+ const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+  const file = e.target.files?.[0];
+  if (!file || !clickedImageRef.current) return;
+  const imageId = clickedImageRef.current;
+  const blobUrl = URL.createObjectURL(file);
+  setCustomImages(prev => ({ ...prev, [imageId]: blobUrl }));
+  try {
+    const formData = new FormData();
+    formData.append('file', file);
+    formData.append('fileName', `${imageId}_${Date.now()}`);
+    formData.append('folder', '/md-home-smart');
+    formData.append('publicKey', 'public_nWAwaKXSj2CjbCBwW6bbtnOI2Z8=');
+    const res = await fetch('https://upload.imagekit.io/api/v1/files/upload', {
+      method: 'POST',
+      body: formData,
+    });
+    const data = await res.json();
+    if (!data.url) throw new Error('Không có URL');
+    setCustomImages(prev => ({ ...prev, [imageId]: data.url }));
+    URL.revokeObjectURL(blobUrl);
+  } catch (err) {
+    console.error('Upload lỗi:', err);
+  }
+  e.target.value = '';
+};
 
       if (!response.ok) throw new Error('Upload thất bại');
       const data = await response.json();

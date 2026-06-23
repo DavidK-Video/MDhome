@@ -27,7 +27,7 @@ const sendToSheet = async (payload: Record<string, string>) => {
 };
 
 const TABS = [
-  'Trang Chủ', 'Giới Thiệu', 'Dự Án', 'Đăng Ký Mua', 'Tin Tức', 'Tuyển Dụng', 'Liên Hệ', '🎥 Cộng Đồng & Video Chia Sẻ'
+  'Trang Chủ', 'Giới Thiệu', 'Dự Án', 'Đăng Ký Mua', 'Tin Tức', 'Tuyển Dụng', 'Liên Hệ', '🎥 Video'
 ];
 
 interface Lead {

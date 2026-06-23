@@ -303,14 +303,43 @@ export default function App() {
     fileInputRef.current?.click();
   };
 
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file || !clickedImageRef.current) return;
-    const reader = new FileReader();
-    reader.onload = (e) => {
-      setCustomImages(prev => ({ ...prev, [clickedImageRef.current!]: e.target?.result as string }));
-    };
-    reader.readAsDataURL(file);
+
+    const imageId = clickedImageRef.current;
+
+    // Hiển thị preview tạm bằng blob URL trong lúc upload
+    const blobUrl = URL.createObjectURL(file);
+    setCustomImages(prev => ({ ...prev, [imageId]: blobUrl }));
+
+    try {
+      // Upload lên ImageKit – chỉ lưu URL ngắn, không lưu base64
+      const formData = new FormData();
+      formData.append('file', file);
+      formData.append('fileName', `${imageId}_${Date.now()}`);
+      formData.append('folder', '/md-home-smart');
+
+      const response = await fetch('https://upload.imagekit.io/api/v1/files/upload', {
+        method: 'POST',
+        headers: {
+          Authorization: 'Basic ' + btoa(import.meta.env.VITE_IMAGEKIT_PRIVATE_KEY + ':'),
+        },
+        body: formData,
+      });
+
+      if (!response.ok) throw new Error('Upload thất bại');
+      const data = await response.json();
+
+      // Lưu URL thật từ ImageKit – nhẹ, không bao giờ bị tràn localStorage
+      setCustomImages(prev => ({ ...prev, [imageId]: data.url }));
+      URL.revokeObjectURL(blobUrl); // giải phóng bộ nhớ tạm
+
+    } catch (err) {
+      console.error('ImageKit upload lỗi:', err);
+      alert('⚠️ Upload ảnh thất bại. Kiểm tra lại API key ImageKit trong .env');
+      // Giữ blob preview tạm – F5 mới mất, không crash
+    }
   };
 
   const handleSaveText = (id: string, text: string) => {

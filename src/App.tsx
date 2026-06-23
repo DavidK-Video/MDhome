@@ -284,7 +284,11 @@ export default function App() {
   }, []);
 
   useEffect(() => {
-    localStorage.setItem('customImages', JSON.stringify(customImages));
+    try {
+  localStorage.setItem('customImages', JSON.stringify(customImages));
+} catch (e) {
+  console.warn('localStorage đầy – ảnh sẽ không được lưu lại sau khi tải lại trang.');
+}
     localStorage.setItem('customText', JSON.stringify(customText));
     if (videos.length > 0) {
       localStorage.setItem('customVideos', JSON.stringify(videos));

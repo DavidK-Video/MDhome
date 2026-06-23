@@ -326,13 +326,18 @@ const [positions, setPositions] = useState<any[]>(() => {
       formData.append('fileName', `${imageId}_${Date.now()}`);
       formData.append('folder', '/md-home-smart');
 
-      const response = await fetch('https://upload.imagekit.io/api/v1/files/upload', {
-        method: 'POST',
-        headers: {
-          Authorization: 'Basic ' + btoa(import.meta.env.VITE_IMAGEKIT_PRIVATE_KEY + ':'),
-        },
-        body: formData,
-      });
+      const authRes = await fetch('/api/imagekit-auth');
+const auth = await authRes.json();
+
+formData.append('publicKey', 'public_nWAwaKXSj2CjbCBwW6bbtnOI2Z8=');
+formData.append('signature', auth.signature);
+formData.append('expire', String(auth.expire));
+formData.append('token', auth.token);
+
+const response = await fetch('https://upload.imagekit.io/api/v1/files/upload', {
+  method: 'POST',
+  body: formData,
+});
 
       if (!response.ok) throw new Error('Upload thất bại');
       const data = await response.json();

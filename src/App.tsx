@@ -63,22 +63,28 @@ export default function App() {
     return [];
   });
 
-  const [leadSearchTerm, setLeadSearchTerm] = useState('');
-  const [newJobTitle, setNewJobTitle] = useState('');
-  const [newJobQty, setNewJobQty] = useState('');
-  const [newJobSalary, setNewJobSalary] = useState('');
-  const [newJobExp, setNewJobExp] = useState('');
-  const [newJobType, setNewJobType] = useState('Toàn thời gian');
-  const [newJobDesc, setNewJobDesc] = useState('');
-  const [newJobBenefits, setNewJobBenefits] = useState('');
-
-  const [positions, setPositions] = useState<any[]>(() => {
-    if (typeof window !== 'undefined') {
-      const saved = localStorage.getItem('recruitmentPositions');
-      if (saved) return JSON.parse(saved);
-    }
-    return [
-      {
+ const [leadSearchTerm, setLeadSearchTerm] = useState('');
+const [customNews, setCustomNews] = useState<any[]>(() => {
+  if (typeof window !== 'undefined') {
+    const saved = localStorage.getItem('customNews');
+    return saved ? JSON.parse(saved) : [];
+  }
+  return [];
+});
+const [newJobTitle, setNewJobTitle] = useState('');
+const [newJobQty, setNewJobQty] = useState('');
+const [newJobSalary, setNewJobSalary] = useState('');
+const [newJobExp, setNewJobExp] = useState('');
+const [newJobType, setNewJobType] = useState('Toàn thời gian');
+const [newJobDesc, setNewJobDesc] = useState('');
+const [newJobBenefits, setNewJobBenefits] = useState('');
+const [positions, setPositions] = useState<any[]>(() => {
+  if (typeof window !== 'undefined') {
+    const saved = localStorage.getItem('recruitmentPositions');
+    if (saved) return JSON.parse(saved);
+  }
+  return [
+    {
         title: 'Chuyên viên tư vấn NOXH',
         qty: '05 nhân sự',
         salary: '8 – 20 triệu/tháng',
@@ -2311,7 +2317,58 @@ export default function App() {
       <Chatbot />
       {/* Admin Panel */}
       {showLoginModal && <LoginModal onClose={() => setShowLoginModal(false)} onLoginSuccess={() => setAdminLoggedIn(true)} />}
-      {adminLoggedIn && <AdminBar onClose={() => setAdminLoggedIn(false)} setEditText={setIsEditingText} setEditImages={setIsEditingImages} />}    
+      {adminLoggedIn && (
+  <AdminBar
+    onClose={() => setAdminLoggedIn(false)}
+    setEditText={setIsEditingText}
+    setEditImages={setIsEditingImages}
+    isEditingText={isEditingText}
+    isEditingImages={isEditingImages}
+    leads={leads}
+    onDeleteLead={(id) => {
+      const updated = leads.filter(l => l.id !== id);
+      setLeads(updated);
+      localStorage.setItem('adminLeads', JSON.stringify(updated));
+    }}
+    onExportCSV={() => {
+      let csv = "\uFEFFHọ Tên,SĐT,Email,Nguồn,Chi Tiết,Thời Gian\n";
+      leads.forEach(r => { csv += `"${r.name}","${r.phone}","${r.email||''}","${r.source}","${r.details}","${r.date}"\n`; });
+      const a = document.createElement('a');
+      a.href = URL.createObjectURL(new Blob([csv], { type: 'text/csv;charset=utf-8;' }));
+      a.download = `Leads_MDHome_${new Date().toLocaleDateString('vi-VN').replace(/\//g,'-')}.csv`;
+      a.click();
+    }}
+    positions={positions}
+    onAddJob={(job) => {
+      const updated = [...positions, job];
+      setPositions(updated);
+      localStorage.setItem('recruitmentPositions', JSON.stringify(updated));
+    }}
+    onDeleteJob={(idx) => {
+      const updated = positions.filter((_, i) => i !== idx);
+      setPositions(updated);
+      localStorage.setItem('recruitmentPositions', JSON.stringify(updated));
+    }}
+    allTabs={TABS}
+    hiddenTabs={hiddenTabs}
+    onToggleTab={(tab) => {
+      setHiddenTabs(prev => prev.includes(tab) ? prev.filter(t => t !== tab) : [...prev, tab]);
+    }}
+    customNews={customNews}
+    onAddNews={(article) => {
+      const updated = [article, ...customNews];
+      setCustomNews(updated);
+      localStorage.setItem('customNews', JSON.stringify(updated));
+    }}
+    onDeleteNews={(id) => {
+      const updated = customNews.filter(n => n.id !== id);
+      setCustomNews(updated);
+      localStorage.setItem('customNews', JSON.stringify(updated));
+    }}
+    leadSearchTerm={leadSearchTerm}
+    setLeadSearchTerm={setLeadSearchTerm}
+  />
+)}    
 
       {/* Zalo QR Code Modal */}
       {showZaloQrModal && (

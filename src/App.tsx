@@ -335,17 +335,6 @@ const [positions, setPositions] = useState<any[]>(() => {
   e.target.value = '';
 };
 
-      // Lưu URL thật từ ImageKit – nhẹ, không bao giờ bị tràn localStorage
-      setCustomImages(prev => ({ ...prev, [imageId]: data.url }));
-      URL.revokeObjectURL(blobUrl); // giải phóng bộ nhớ tạm
-
-    } catch (err) {
-      console.error('ImageKit upload lỗi:', err);
-      alert('⚠️ Upload ảnh thất bại. Kiểm tra lại API key ImageKit trong .env');
-      // Giữ blob preview tạm – F5 mới mất, không crash
-    }
-  };
-
   const handleSaveText = (id: string, text: string) => {
     setCustomText(prev => ({ ...prev, [id]: text }));
   };

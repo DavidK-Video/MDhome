@@ -335,9 +335,6 @@ const [positions, setPositions] = useState<any[]>(() => {
   e.target.value = '';
 };
 
-      if (!response.ok) throw new Error('Upload thất bại');
-      const data = await response.json();
-
       // Lưu URL thật từ ImageKit – nhẹ, không bao giờ bị tràn localStorage
       setCustomImages(prev => ({ ...prev, [imageId]: data.url }));
       URL.revokeObjectURL(blobUrl); // giải phóng bộ nhớ tạm

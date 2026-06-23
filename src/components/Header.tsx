@@ -89,12 +89,12 @@ export default function Header({ activeTab, setActiveTab, onLogin, tabs, adminLo
         </div>
 
         {/* Center: Navigation Menu (Desktop Only) */}
-        <nav className="hidden lg:flex items-center justify-center gap-1 xl:gap-2 text-[12.5px] xl:text-[13px] font-bold font-sans">
+        <nav className="hidden lg:flex items-center justify-center gap-0.5 xl:gap-1 text-[11px] xl:text-[12px] font-bold font-sans">
           {tabs.map(tab => (
             <button 
               key={tab}
               onClick={() => handleTabClick(tab)}
-              className={`px-2.5 py-1.5 rounded-xl transition-all duration-300 cursor-pointer uppercase tracking-wider relative group ${
+              className={`px-1.5 xl:px-2 py-1.5 rounded-xl transition-all duration-300 cursor-pointer uppercase tracking-wide relative group whitespace-nowrap ${
                 activeTab === tab 
                   ? 'bg-amber-500/10 text-amber-400 font-extrabold shadow-sm' 
                   : 'text-white/90 hover:text-amber-400 hover:bg-white/5'

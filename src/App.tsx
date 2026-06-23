@@ -9,6 +9,8 @@ import EditableImage from './components/EditableImage';
 import EditableText from './components/EditableText';
 import { MD_CONFIG } from './config';
 import { PROJECTS, NEWS, JOBS, DEFAULT_VIDEOS } from './data/tabData';
+import { storage } from './firebase';
+import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 
 const SHEET_URL = 'https://script.google.com/macros/s/AKfycbwZqHNO3ydCYQaVPbVzoanWqeVlfiuxZkNxPYAhSdp0IxSA8slcKU7s2bttqWJTIelN/exec';
 
@@ -316,18 +318,10 @@ const [positions, setPositions] = useState<any[]>(() => {
   const blobUrl = URL.createObjectURL(file);
   setCustomImages(prev => ({ ...prev, [imageId]: blobUrl }));
   try {
-    const formData = new FormData();
-    formData.append('file', file);
-    formData.append('fileName', `${imageId}_${Date.now()}`);
-    formData.append('folder', '/md-home-smart');
-    formData.append('publicKey', 'public_nWAwaKXSj2CjbCBwW6bbtnOI2Z8=');
-    const res = await fetch('https://upload.imagekit.io/api/v1/files/upload', {
-      method: 'POST',
-      body: formData,
-    });
-    const data = await res.json();
-    if (!data.url) throw new Error('Không có URL');
-    setCustomImages(prev => ({ ...prev, [imageId]: data.url }));
+    const storageRef = ref(storage, `md-home-smart/${imageId}_${Date.now()}`);
+    await uploadBytes(storageRef, file);
+    const url = await getDownloadURL(storageRef);
+    setCustomImages(prev => ({ ...prev, [imageId]: url }));
     URL.revokeObjectURL(blobUrl);
   } catch (err) {
     console.error('Upload lỗi:', err);

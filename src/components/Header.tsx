@@ -60,7 +60,7 @@ export default function Header({ activeTab, setActiveTab, onLogin, tabs, adminLo
           : 'bg-[#1a3c6e] py-3 border-b border-white/15'
       }`}
     >
-      <div className="max-w-7xl mx-auto px-4 md:px-6 flex justify-between items-center">
+      <div className="container mx-auto px-4 md:px-6 flex justify-between items-center">
         
         {/* Left: Premium Multi-Line Brand Logo & Subtitle */}
         <div 

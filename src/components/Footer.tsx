@@ -40,7 +40,7 @@ export default function Footer({ setActiveTab, onLogin, hiddenTabs = [] }: Foote
           <div>
             <h4 className="font-bold mb-4">THÔNG TIN CÔNG TY</h4>
             {infoLinks.map(link => (
-                <button key={link.name} onClick={() => setActiveTab(link.tab)} className="block mb-2 hover:text-[#c9a227] text-left">
+                <button key={link.name} onClick={() => { setActiveTab(link.tab); window.scrollTo({ top: 0, behavior: 'smooth' }); }} className="block mb-2 hover:text-[#c9a227] text-left">
                     {'>'} {link.name}
                 </button>
             ))}
@@ -49,7 +49,7 @@ export default function Footer({ setActiveTab, onLogin, hiddenTabs = [] }: Foote
           <div>
             <h4 className="font-bold mb-4">CÁC DỰ ÁN NỔI BẬT</h4>
              {projectLinks.map(link => (
-                <button key={link.name} onClick={() => setActiveTab(link.tab)} className="block mb-2 hover:text-[#c9a227] text-left">
+                <button key={link.name} onClick={() => { setActiveTab(link.tab); window.scrollTo({ top: 0, behavior: 'smooth' }); }} className="block mb-2 hover:text-[#c9a227] text-left">
                     {'>'} {link.name}
                 </button>
             ))}

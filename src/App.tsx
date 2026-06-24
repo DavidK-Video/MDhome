@@ -411,27 +411,29 @@ const [positions, setPositions] = useState<any[]>(() => {
         return (
           <div className="space-y-20 font-sans">
             {/* Hero Section */}
-            <div className="relative h-[600px] flex items-center justify-center rounded-3xl overflow-hidden bg-white">
-              <EditableImage id="hero" isEditing={isEditingImages} onClick={handleImageClick} customImages={customImages} src="/luxury_apartment_hero.jpg" alt="Apartment Complex" className="absolute w-full h-full object-cover" />
-              <div className="absolute inset-0 bg-white/20" />
-              <div className="relative text-center text-[#1a3c6e] space-y-4 p-8">
-                <EditableText id="hero_title" text={customText.hero_title || 'MD HOME SMART PHỐ HIẾN'} isEditing={isEditing} onSave={handleSaveText} className="text-3xl md:text-5xl font-black leading-normal tracking-wide text-[#1a3c6e]" as="h1" />
-                <EditableText id="hero_subtitle" text={customText.hero_subtitle || 'KIẾN TẠO CỘNG ĐỒNG SỐNG HIỆN ĐẠI - VĂN MINH - BỀN VỮNG'} isEditing={isEditing} onSave={handleSaveText} className="text-base md:text-xl uppercase text-white font-extrabold leading-relaxed tracking-wider" as="p" />
-                <EditableText id="hero_tagline" text={customText.hero_tagline || 'Không gian sống xanh, tiện ích đồng bộ, kết nối thuận tiện và cơ hội sở hữu nhà ở với chi phí hợp lý.'} isEditing={isEditing} onSave={handleSaveText} className="text-sm md:text-base font-semibold max-w-2xl text-white/90 leading-relaxed" as="p" />
-                <div className="pt-8 flex gap-4 justify-center">
-                  <button 
-                    onClick={() => {
-                      setActiveTab('Dự Án');
-                      window.scrollTo({ top: 0, behavior: 'smooth' });
-                    }}
-                    className="bg-[#c9a227] text-white px-10 py-4 rounded-full font-bold text-lg hover:bg-yellow-600 transition cursor-pointer font-sans"
-                  >
-                    Khám phá dự án
-                  </button>
-                  <a href={`tel:${MD_CONFIG.hotline1}`} className="bg-white text-[#1a3c6e] px-10 py-4 rounded-full font-bold text-lg hover:bg-gray-100 transition">{MD_CONFIG.hotline1}</a>
-                </div>
-              </div>
-            </div>
+            <div className="relative h-[600px] flex items-center justify-center rounded-3xl overflow-hidden bg-gray-900">
+  <EditableImage id="hero" isEditing={isEditingImages} onClick={handleImageClick} customImages={customImages} src="/luxury_apartment_hero.jpg" alt="Apartment Complex" className="absolute w-full h-full object-cover opacity-60" />
+  <div className="absolute inset-0 bg-gradient-to-b from-black/40 via-black/30 to-black/60" />
+  <div className="relative text-center text-white space-y-4 p-8">
+    <EditableText id="hero_subtitle" text={customText.hero_subtitle || 'KIẾN TẠO CỘNG ĐỒNG SỐNG HIỆN ĐẠI - VĂN MINH - BỀN VỮNG'} isEditing={isEditing} onSave={handleSaveText} className="text-sm md:text-base uppercase text-[#c9a227] font-extrabold leading-relaxed tracking-widest" as="p" />
+    <EditableText id="hero_title" text={customText.hero_title || 'MD HOME SMART PHỐ HIẾN'} isEditing={isEditing} onSave={handleSaveText} className="text-4xl md:text-6xl font-black leading-tight tracking-wide text-white drop-shadow-lg" as="h1" />
+    <EditableText id="hero_tagline" text={customText.hero_tagline || 'Không gian sống xanh, tiện ích đồng bộ, kết nối thuận tiện và cơ hội sở hữu nhà ở với chi phí hợp lý.'} isEditing={isEditing} onSave={handleSaveText} className="text-sm md:text-base font-medium max-w-2xl text-white/80 leading-relaxed mx-auto" as="p" />
+    <div className="pt-8 flex gap-4 justify-center flex-wrap">
+      <button
+        onClick={() => {
+          setActiveTab('Dự Án');
+          window.scrollTo({ top: 0, behavior: 'smooth' });
+        }}
+        className="bg-[#c9a227] text-white px-10 py-4 rounded-full font-bold text-lg hover:bg-yellow-600 transition cursor-pointer font-sans flex items-center gap-2"
+      >
+        🏠 Khám phá dự án
+      </button>
+      <a href={`tel:${MD_CONFIG.hotline1}`} className="bg-white/10 backdrop-blur text-white border border-white/30 px-10 py-4 rounded-full font-bold text-lg hover:bg-white/20 transition flex items-center gap-2">
+        📞 Hotline: {MD_CONFIG.hotline1}
+      </a>
+    </div>
+  </div>
+</div>
 
             {/* Introduction & Stats */}
             <div className="grid md:grid-cols-2 gap-12 items-center">

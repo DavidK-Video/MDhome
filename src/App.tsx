@@ -411,12 +411,12 @@ const [positions, setPositions] = useState<any[]>(() => {
         return (
           <div className="space-y-20 font-sans">
             {/* Hero Section */}
-            <div className="relative h-[600px] flex items-center justify-center rounded-3xl overflow-hidden bg-gray-900">
+            <div className="relative h-[380px] sm:h-[460px] md:h-[600px] flex items-center justify-center rounded-3xl overflow-hidden bg-gray-900">
   <EditableImage id="hero" isEditing={isEditingImages} onClick={handleImageClick} customImages={customImages} src="/luxury_apartment_hero.jpg" alt="Apartment Complex" className="absolute w-full h-full object-cover opacity-60" />
   <div className="absolute inset-0 bg-gradient-to-b from-black/40 via-black/30 to-black/60" />
   <div className="relative text-center text-white space-y-4 p-8">
     <EditableText id="hero_subtitle" text={customText.hero_subtitle || 'KIẾN TẠO CỘNG ĐỒNG SỐNG HIỆN ĐẠI - VĂN MINH - BỀN VỮNG'} isEditing={isEditing} onSave={handleSaveText} className="text-sm md:text-base uppercase text-[#c9a227] font-extrabold leading-relaxed tracking-widest" as="p" />
-    <EditableText id="hero_title" text={customText.hero_title || 'MD HOME SMART PHỐ HIẾN'} isEditing={isEditing} onSave={handleSaveText} className="text-2xl sm:text-4xl md:text-5xl font-black leading-tight tracking-wide text-white drop-shadow-lg" as="h1" />
+    <EditableText id="hero_title" text={customText.hero_title || 'MD HOME SMART PHỐ HIẾN'} isEditing={isEditing} onSave={handleSaveText} className="text-2xl sm:text-2xl sm:text-3xl md:text-4xl md:text-5xl font-black leading-tight tracking-wide text-white drop-shadow-lg" as="h1" />
     <EditableText id="hero_tagline" text={customText.hero_tagline || 'Không gian sống xanh, tiện ích đồng bộ, kết nối thuận tiện và cơ hội sở hữu nhà ở với chi phí hợp lý.'} isEditing={isEditing} onSave={handleSaveText} className="text-sm md:text-base font-medium max-w-2xl text-white/80 leading-relaxed mx-auto" as="p" />
     <div className="pt-6 flex flex-col sm:flex-row gap-3 justify-center items-center">
       <button
@@ -438,7 +438,7 @@ const [positions, setPositions] = useState<any[]>(() => {
             {/* Introduction & Stats */}
             <div className="grid md:grid-cols-2 gap-12 items-center">
               <div className="space-y-6">
-                <EditableText id="home_intro_title" text={customText.home_intro_title || 'MD HOME SMART PHỐ HIẾN'} isEditing={isEditing} onSave={handleSaveText} className="text-4xl font-bold text-[#1a3c6e]" as="h2" />
+                <EditableText id="home_intro_title" text={customText.home_intro_title || 'MD HOME SMART PHỐ HIẾN'} isEditing={isEditing} onSave={handleSaveText} className="text-2xl sm:text-3xl md:text-4xl font-bold text-[#1a3c6e]" as="h2" />
                 <EditableText id="home_intro_desc1" text={customText.home_intro_desc1 || `Nhà ở xã hội Phố Hiến Hưng Yên – Chất lượng, An tâm và Bền vững. Giá cả hợp lý, thủ tục đơn giản, hỗ trợ tư vấn ${MD_CONFIG.workingHours} từ đội ngũ chuyên nghiệp.`} isEditing={isEditing} onSave={handleSaveText} className="text-lg text-gray-700 leading-relaxed" as="p" />
                 <EditableText id="home_intro_desc2" text={customText.home_intro_desc2 || `${MD_CONFIG.subtitle}, MD HOME SMART tự hào kiến tạo những căn nhà chất lượng, bề vững cho cộng đồng cư dân Phố Hiến – Hưng Yên.`} isEditing={isEditing} onSave={handleSaveText} className="text-lg text-gray-700" as="p" />
               </div>
@@ -473,7 +473,7 @@ const [positions, setPositions] = useState<any[]>(() => {
 
             {/* Projects Section */}
             <div className="space-y-8 bg-gray-50 p-6 md:p-12 rounded-3xl" id="Du_an_mo_ban_section">
-              <EditableText id="projects_section_title" text={customText.projects_section_title || 'DỰ ÁN MỞ BÁN'} isEditing={isEditing} onSave={handleSaveText} className="text-4xl font-bold text-[#1a3c6e] text-center" as="h3" />
+              <EditableText id="projects_section_title" text={customText.projects_section_title || 'DỰ ÁN MỞ BÁN'} isEditing={isEditing} onSave={handleSaveText} className="text-2xl sm:text-3xl md:text-4xl font-bold text-[#1a3c6e] text-center" as="h3" />
               <EditableText id="projects_section_desc" text={customText.projects_section_desc || 'Các dự án MD HOME SMART tại Phố Hiến, Hưng Yên sở hữu vị trí đắc địa, hạ tầng hiện đại, quy hoạch đồng bộ, dịch vụ đẳng cấp và không gian sống trong lành.'} isEditing={isEditing} onSave={handleSaveText} className="text-lg text-gray-700 max-w-3xl mx-auto text-center leading-relaxed" as="p" />
               
               {adminLoggedIn && (
@@ -723,7 +723,7 @@ const [positions, setPositions] = useState<any[]>(() => {
 
             {/* News Preview */}
             <div className="space-y-8">
-               <EditableText id="news_preview_title" text={customText.news_preview_title || 'TIN TỨC MỚI NHẤT'} isEditing={isEditing} onSave={handleSaveText} className="text-4xl font-bold text-[#1a3c6e] text-center" as="h3" />
+               <EditableText id="news_preview_title" text={customText.news_preview_title || 'TIN TỨC MỚI NHẤT'} isEditing={isEditing} onSave={handleSaveText} className="text-2xl sm:text-3xl md:text-4xl font-bold text-[#1a3c6e] text-center" as="h3" />
                <div className="grid md:grid-cols-3 gap-8">
                {NEWS.slice(0, 3).map((item, i) => (
                    <div key={i} className="bg-white border rounded-3xl overflow-hidden hover:shadow-lg transition">
@@ -744,7 +744,7 @@ const [positions, setPositions] = useState<any[]>(() => {
         return (
           <div className="space-y-10">
              <div className="space-y-4">
-                <EditableText id="about_title" text={customText.about_title || 'VỀ MD HOME SMART'} isEditing={isEditing} onSave={handleSaveText} className="text-3xl font-bold text-[#1a3c6e]" as="h3" />
+                <EditableText id="about_title" text={customText.about_title || 'VỀ MD HOME SMART'} isEditing={isEditing} onSave={handleSaveText} className="text-2xl sm:text-3xl font-bold text-[#1a3c6e]" as="h3" />
                 <EditableText id="about_desc" text={customText.about_desc || 'MD HOME SMART là đơn vị đồng hành tư vấn và hỗ trợ khách hàng tiếp cận các dự án Nhà ở Xã hội tại Phố Hiến. Với đội ngũ chuyên viên giàu kinh nghiệm, chúng tôi hỗ trợ từ khâu kiểm tra điều kiện mua, hoàn thiện hồ sơ, tư vấn vay vốn ưu đãi đến hướng dẫn các thủ tục pháp lý cần thiết. Mục tiêu của MD HOME SMART là giúp khách hàng tiếp cận thông tin minh bạch, tiết kiệm thời gian và nâng cao cơ hội sở hữu căn hộ phù hợp nhu cầu an cư lâu dài.'} isEditing={isEditing} onSave={handleSaveText} className="text-gray-700 leading-relaxed text-lg whitespace-pre-line font-sans" as="p" />
              </div>
              
@@ -1132,7 +1132,7 @@ const [positions, setPositions] = useState<any[]>(() => {
       case 'Tin Tức':
         return (
             <div className="space-y-10">
-               <EditableText id="news_section_title" text={customText.news_section_title || 'TIN TỨC BẤT ĐỘNG SẢN & CAM KẾT PHÁP LÝ'} isEditing={isEditing} onSave={handleSaveText} className="text-3xl font-extrabold text-[#1a3c6e] border-l-4 border-[#c9a227] pl-4" as="h3" />
+               <EditableText id="news_section_title" text={customText.news_section_title || 'TIN TỨC BẤT ĐỘNG SẢN & CAM KẾT PHÁP LÝ'} isEditing={isEditing} onSave={handleSaveText} className="text-xl sm:text-2xl md:text-3xl font-extrabold text-[#1a3c6e] border-l-4 border-[#c9a227] pl-4" as="h3" />
                <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                {NEWS.map((item, i) => (
                    <div key={i} className="bg-white border border-slate-100 rounded-3xl p-5 shadow-sm hover:shadow-xl hover:border-amber-500/20 transition-all duration-300 flex flex-col justify-between group">
@@ -2302,7 +2302,7 @@ const [positions, setPositions] = useState<any[]>(() => {
     <div className="min-h-screen flex flex-col relative">
       <input type="file" ref={fileInputRef} onChange={handleFileChange} className="hidden" accept="image/*" />
       <Header activeTab={activeTab} setActiveTab={setActiveTab} onLogin={handleLogin} tabs={headerTabs} adminLoggedIn={adminLoggedIn} onLogout={() => setAdminLoggedIn(false)} />
-      <main className="flex-grow w-full px-2 sm:px-4 md:container md:mx-auto md:px-4 py-8">
+      <main className="flex-grow w-full max-w-7xl mx-auto px-4 sm:px-6 md:px-8 py-6 md:py-8">
         {activeTab !== 'Trang Chủ' && activeTab !== '⚙️ Quản Trị Hệ Thống' && (
           <h2 className="text-2xl md:text-3xl font-extrabold mb-6 text-[#1a3c6e] border-l-4 border-[#c9a227] pl-4 leading-normal">{activeTab}</h2>
         )}

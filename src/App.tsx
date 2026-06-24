@@ -9,8 +9,6 @@ import EditableImage from './components/EditableImage';
 import EditableText from './components/EditableText';
 import { MD_CONFIG } from './config';
 import { PROJECTS, NEWS, JOBS, DEFAULT_VIDEOS } from './data/tabData';
-import { storage } from './firebase';
-import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 
 const SHEET_URL = 'https://script.google.com/macros/s/AKfycbwZqHNO3ydCYQaVPbVzoanWqeVlfiuxZkNxPYAhSdp0IxSA8slcKU7s2bttqWJTIelN/exec';
 
@@ -242,7 +240,7 @@ const [positions, setPositions] = useState<any[]>(() => {
   };
 
   useEffect(() => {
-    const savedImages = localStorage.getItem('customImages');
+    const savedImages = localStorage.getItem('customImagesUrls');
     if (savedImages) setCustomImages(JSON.parse(savedImages));
     const savedText = localStorage.getItem('customText');
     if (savedText) setCustomText(JSON.parse(savedText));
@@ -292,11 +290,7 @@ const [positions, setPositions] = useState<any[]>(() => {
   }, []);
 
   useEffect(() => {
-    try {
-  localStorage.setItem('customImages', JSON.stringify(customImages));
-} catch (e) {
-  console.warn('localStorage đầy – ảnh sẽ không được lưu lại sau khi tải lại trang.');
-}
+   
     localStorage.setItem('customText', JSON.stringify(customText));
     if (videos.length > 0) {
       localStorage.setItem('customVideos', JSON.stringify(videos));
@@ -318,11 +312,30 @@ const [positions, setPositions] = useState<any[]>(() => {
   const blobUrl = URL.createObjectURL(file);
   setCustomImages(prev => ({ ...prev, [imageId]: blobUrl }));
   try {
-    const storageRef = ref(storage, `md-home-smart/${imageId}_${Date.now()}`);
-    await uploadBytes(storageRef, file);
-    const url = await getDownloadURL(storageRef);
-    setCustomImages(prev => ({ ...prev, [imageId]: url }));
-    URL.revokeObjectURL(blobUrl);
+    // ✅ THAY: Dùng ImgBB thay vì Firebase
+    const formData = new FormData();
+    formData.append('image', file);
+    formData.append('key', '710a97f02ac38dd01de794696fa2e943');
+
+    const res = await fetch('https://api.imgbb.com/1/upload', {
+      method: 'POST',
+      body: formData,
+    });
+    const data = await res.json();
+
+    if (data.success) {
+      const url = data.data.url;
+      setCustomImages(prev => ({ ...prev, [imageId]: url }));
+      URL.revokeObjectURL(blobUrl);
+      // Lưu URL vào localStorage
+      try {
+        const existing = JSON.parse(localStorage.getItem('customImagesUrls') || '{}');
+        existing[imageId] = url;
+        localStorage.setItem('customImagesUrls', JSON.stringify(existing));
+      } catch {
+        console.warn('Không lưu được vào localStorage');
+      }
+    }
   } catch (err) {
     console.error('Upload lỗi:', err);
   }

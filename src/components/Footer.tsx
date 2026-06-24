@@ -24,8 +24,8 @@ export default function Footer({ setActiveTab, onLogin, hiddenTabs = [] }: Foote
   ];
 
   return (
-      <footer className="bg-[#2a1b15] text-white p-12">
-        <div className="container mx-auto grid grid-cols-1 md:grid-cols-3 gap-8">
+      <footer className="bg-[#2a1b15] text-white px-4 sm:px-6 md:px-8 py-8 md:py-12">
+        <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-8">
           <div>
             <h3 className="text-xl font-bold text-[#c9a227] mb-4">{MD_CONFIG.name}</h3>
             <p className="mb-2">Thành viên của Vinhome</p>
@@ -57,7 +57,7 @@ export default function Footer({ setActiveTab, onLogin, hiddenTabs = [] }: Foote
         </div>
         
         {/* Bottom bar with copyright and admin access */}
-        <div className="container mx-auto mt-12 pt-6 border-t border-white/10 flex flex-col sm:flex-row justify-between items-center gap-4 text-xs text-slate-400 font-sans">
+        <div className="max-w-7xl mx-auto mt-8 md:mt-12 pt-6 border-t border-white/10 flex flex-col sm:flex-row justify-between items-center gap-4 text-xs text-slate-400 font-sans">
           <p>© {new Date().getFullYear()} MD HOME SMART. Thiết kế chuyên nghiệp. Bảo lưu mọi quyền.</p>
           {onLogin && (
             <button 

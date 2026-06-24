@@ -2308,30 +2308,7 @@ const [positions, setPositions] = useState<any[]>(() => {
       </main>
       <Footer setActiveTab={setActiveTab} onLogin={handleLogin} hiddenTabs={hiddenTabs} />
       <FloatingButtons onZaloClick={() => setShowZaloQrModal(true)} />
-      {adminLoggedIn && (
-  <div className="fixed top-24 right-4 z-[998] flex flex-col gap-2">
-    <button
-      onClick={() => setIsEditingText(prev => !prev)}
-      className={`px-3 py-2 rounded-xl text-[11px] font-bold shadow-lg border transition cursor-pointer whitespace-nowrap ${
-        isEditingText
-          ? 'bg-amber-500 text-white border-amber-400 shadow-amber-200'
-          : 'bg-white text-slate-700 border-slate-200 hover:bg-amber-50'
-      }`}
-    >
-      ✍️ {isEditingText ? 'Tắt sửa Text' : 'Sửa Text'}
-    </button>
-    <button
-      onClick={() => setIsEditingImages(prev => !prev)}
-      className={`px-3 py-2 rounded-xl text-[11px] font-bold shadow-lg border transition cursor-pointer whitespace-nowrap ${
-        isEditingImages
-          ? 'bg-blue-500 text-white border-blue-400 shadow-blue-200'
-          : 'bg-white text-slate-700 border-slate-200 hover:bg-blue-50'
-      }`}
-    >
-      🖼️ {isEditingImages ? 'Tắt sửa Ảnh' : 'Sửa Ảnh'}
-    </button>
-  </div>
-)}
+      
       <Chatbot />
       {/* Admin Panel */}
       {showLoginModal && <LoginModal onClose={() => setShowLoginModal(false)} onLoginSuccess={() => setAdminLoggedIn(true)} />}

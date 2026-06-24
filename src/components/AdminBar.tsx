@@ -521,13 +521,14 @@ export default function AdminBar({
           </div>
         </div>
 
-        {/* Content area – scrollable */}
-        <div className="px-4 py-4 max-h-[50vh] overflow-y-auto">
-          {activeSection === 'dashboard' && renderDashboard()}
-          {activeSection === 'leads'     && renderLeads()}
-          {activeSection === 'news'      && renderNews()}
-          {activeSection === 'jobs'      && renderJobs()}
-        </div>
+        {!isMinimized && (
+          <div className="px-4 py-4 max-h-[50vh] overflow-y-auto">
+            {activeSection === 'dashboard' && renderDashboard()}
+            {activeSection === 'leads'     && renderLeads()}
+            {activeSection === 'news'      && renderNews()}
+            {activeSection === 'jobs'      && renderJobs()}
+          </div>
+        )}
       </div>
     </div>
   );

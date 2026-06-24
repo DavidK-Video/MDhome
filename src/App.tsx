@@ -428,7 +428,7 @@ const [positions, setPositions] = useState<any[]>(() => {
       >
         🏠 Khám phá dự án
       </button>
-      <a href={`tel:${MD_CONFIG.hotline1}`} className="bg-white text-[#1a3c6e] px-8 py-3.5 rounded-full font-bold text-base hover:bg-gray-100 transition flex items-center gap-2"
+      <a href={`tel:${MD_CONFIG.hotline1}`} className="bg-white text-[#1a3c6e] px-8 py-3.5 rounded-full font-bold text-base hover:bg-gray-100 transition flex items-center gap-2">
         <span>📞 Hotline: {MD_CONFIG.hotline1}</span>
       </a>
     </div>

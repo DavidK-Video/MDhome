@@ -669,7 +669,7 @@ const [positions, setPositions] = useState<any[]>(() => {
             {/* Service Highlights */}
             <div className="bg-[#1a3c6e] p-8 md:p-16 rounded-3xl text-white">
                 <EditableText id="consulting_section_title" text={customText.consulting_section_title || 'ĐỒNG HÀNH CHUYÊN NGHIỆP'} isEditing={isEditing} onSave={handleSaveText} className="text-[#c9a227] font-bold uppercase tracking-widest text-xs md:text-sm mb-2" as="p" />
-                <EditableText id="consulting_section_subtitle" text={customText.consulting_section_subtitle || 'TƯ VẤN CHUYÊN NGHIỆP – ĐỒNG HÀNH TỪ HỒ SƠ ĐẾN NHẬN NHÀ'} isEditing={isEditing} onSave={handleSaveText} className="text-3xl md:text-4xl font-bold mb-6 leading-tight" as="h3" />
+                <EditableText id="consulting_section_subtitle" text={customText.consulting_section_subtitle || 'TƯ VẤN CHUYÊN NGHIỆP – ĐỒNG HÀNH TỪ HỒ SƠ ĐẾN NHẬN NHÀ'} isEditing={isEditing} onSave={handleSaveText} className="text-xl sm:text-2xl md:text-3xl md:text-4xl font-bold mb-6 leading-tight" as="h3" />
                 
                 <div className="flex flex-col lg:flex-row gap-12 items-center">
                   <div className="flex-1 space-y-8">

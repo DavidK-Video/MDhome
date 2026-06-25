@@ -9,6 +9,11 @@ import EditableImage from './components/EditableImage';
 import EditableText from './components/EditableText';
 import { MD_CONFIG } from './config';
 import { PROJECTS, NEWS, JOBS, DEFAULT_VIDEOS } from './data/tabData';
+import { db } from './firebase';
+import { doc, getDoc, setDoc, onSnapshot } from 'firebase/firestore';
+
+// Document Firestore dùng chung – mọi thiết bị đọc/ghi vào đây để đồng bộ nội dung
+const SITE_CONTENT_DOC = doc(db, 'siteContent', 'main');
 
 const SHEET_URL = 'https://script.google.com/macros/s/AKfycbwZqHNO3ydCYQaVPbVzoanWqeVlfiuxZkNxPYAhSdp0IxSA8slcKU7s2bttqWJTIelN/exec';
 
@@ -57,8 +62,12 @@ export default function App() {
   // Unified Admin settings and lists
   const [hiddenTabs, setHiddenTabs] = useState<string[]>(() => {
     if (typeof window !== 'undefined') {
-      const saved = localStorage.getItem('hiddenTabs');
-      return saved ? JSON.parse(saved) : [];
+      try {
+        const saved = localStorage.getItem('hiddenTabs');
+        return saved ? JSON.parse(saved) : [];
+      } catch {
+        return [];
+      }
     }
     return [];
   });
@@ -66,8 +75,12 @@ export default function App() {
  const [leadSearchTerm, setLeadSearchTerm] = useState('');
 const [customNews, setCustomNews] = useState<any[]>(() => {
   if (typeof window !== 'undefined') {
-    const saved = localStorage.getItem('customNews');
-    return saved ? JSON.parse(saved) : [];
+    try {
+      const saved = localStorage.getItem('customNews');
+      return saved ? JSON.parse(saved) : [];
+    } catch {
+      return [];
+    }
   }
   return [];
 });
@@ -80,8 +93,12 @@ const [newJobDesc, setNewJobDesc] = useState('');
 const [newJobBenefits, setNewJobBenefits] = useState('');
 const [positions, setPositions] = useState<any[]>(() => {
   if (typeof window !== 'undefined') {
-    const saved = localStorage.getItem('recruitmentPositions');
-    if (saved) return JSON.parse(saved);
+    try {
+      const saved = localStorage.getItem('recruitmentPositions');
+      if (saved) return JSON.parse(saved);
+    } catch {
+      // dữ liệu lưu trước đó bị lỗi, dùng giá trị mặc định bên dưới
+    }
   }
   return [
     {
@@ -240,22 +257,27 @@ const [positions, setPositions] = useState<any[]>(() => {
   };
 
   useEffect(() => {
-    const savedImages = localStorage.getItem('customImagesUrls');
-    if (savedImages) setCustomImages(JSON.parse(savedImages));
-    const savedText = localStorage.getItem('customText');
-    if (savedText) setCustomText(JSON.parse(savedText));
-    const savedVideos = localStorage.getItem('customVideos');
-    if (savedVideos) {
-      setVideos(JSON.parse(savedVideos));
-    } else {
+    try {
+      const savedImages = localStorage.getItem('customImagesUrls');
+      if (savedImages) setCustomImages(JSON.parse(savedImages));
+      const savedText = localStorage.getItem('customText');
+      if (savedText) setCustomText(JSON.parse(savedText));
+      const savedVideos = localStorage.getItem('customVideos');
+      if (savedVideos) {
+        setVideos(JSON.parse(savedVideos));
+      } else {
+        setVideos(DEFAULT_VIDEOS);
+      }
+    } catch {
       setVideos(DEFAULT_VIDEOS);
     }
 
     // Load Leads
-    const savedLeads = localStorage.getItem('adminLeads');
-    if (savedLeads) {
-      setLeads(JSON.parse(savedLeads));
-    } else {
+    try {
+      const savedLeads = localStorage.getItem('adminLeads');
+      if (savedLeads) {
+        setLeads(JSON.parse(savedLeads));
+      } else {
       const initialLeads: Lead[] = [
         {
           id: 'lead_1',
@@ -286,18 +308,62 @@ const [positions, setPositions] = useState<any[]>(() => {
       ];
       setLeads(initialLeads);
       localStorage.setItem('adminLeads', JSON.stringify(initialLeads));
+      }
+    } catch {
+      setLeads([]);
     }
   }, []);
 
+  // ─── Đồng bộ nội dung (ảnh, text, tin tức, tuyển dụng...) qua Firestore ───
+  // Để mọi thiết bị (điện thoại, máy tính, tablet) luôn thấy đúng dữ liệu mới nhất.
+  // onSnapshot tự động lắng nghe real-time: khi admin sửa trên máy A,
+  // máy B đang mở web sẽ tự cập nhật ngay không cần tải lại trang.
+  const isApplyingRemoteUpdate = useRef(false);
+
   useEffect(() => {
-   
+    const unsubscribe = onSnapshot(SITE_CONTENT_DOC, (snapshot) => {
+      if (!snapshot.exists()) return;
+      const data = snapshot.data();
+      isApplyingRemoteUpdate.current = true;
+      if (data.customImages) setCustomImages(data.customImages);
+      if (data.customText) setCustomText(data.customText);
+      if (data.customNews) setCustomNews(data.customNews);
+      if (data.positions) setPositions(data.positions);
+      if (data.hiddenTabs) setHiddenTabs(data.hiddenTabs);
+      if (data.videos) setVideos(data.videos);
+    }, (err) => {
+      console.error('Không thể đồng bộ dữ liệu từ máy chủ, dùng dữ liệu cục bộ:', err);
+    });
+    return () => unsubscribe();
+  }, []);
+
+  useEffect(() => {
+    // Bỏ qua lần cập nhật vừa nhận từ Firestore (onSnapshot) để tránh ghi lại vô ích
+    if (isApplyingRemoteUpdate.current) {
+      isApplyingRemoteUpdate.current = false;
+      return;
+    }
+
     localStorage.setItem('customText', JSON.stringify(customText));
     if (videos.length > 0) {
       localStorage.setItem('customVideos', JSON.stringify(videos));
     }
     localStorage.setItem('recruitmentPositions', JSON.stringify(positions));
     localStorage.setItem('hiddenTabs', JSON.stringify(hiddenTabs));
-  }, [customImages, customText, videos, positions, hiddenTabs]);
+
+    // Ghi lên Firestore để mọi thiết bị khác đọc được nội dung mới nhất
+    setDoc(SITE_CONTENT_DOC, {
+      customImages,
+      customText,
+      customNews,
+      positions,
+      hiddenTabs,
+      videos,
+      updatedAt: new Date().toISOString(),
+    }, { merge: true }).catch((err) => {
+      console.error('Không thể lưu dữ liệu lên máy chủ, đã lưu tạm trên máy này:', err);
+    });
+  }, [customImages, customText, customNews, videos, positions, hiddenTabs]);
 
   const handleImageClick = (id: string) => {
     if (!isEditingImages) return;
@@ -416,7 +482,7 @@ const [positions, setPositions] = useState<any[]>(() => {
   <div className="absolute inset-0 bg-gradient-to-b from-black/40 via-black/30 to-black/60" />
   <div className="relative text-center text-white space-y-4 p-8">
     <EditableText id="hero_subtitle" text={customText.hero_subtitle || 'KIẾN TẠO CỘNG ĐỒNG SỐNG HIỆN ĐẠI - VĂN MINH - BỀN VỮNG'} isEditing={isEditing} onSave={handleSaveText} className="text-sm md:text-base uppercase text-[#c9a227] font-extrabold leading-relaxed tracking-widest" as="p" />
-    <EditableText id="hero_title" text={customText.hero_title || 'MD HOME SMART PHỐ HIẾN'} isEditing={isEditing} onSave={handleSaveText} className="text-2xl sm:text-2xl sm:text-3xl md:text-4xl md:text-5xl font-black leading-tight tracking-wide text-white drop-shadow-lg" as="h1" />
+    <EditableText id="hero_title" text={customText.hero_title || 'MD HOME SMART PHỐ HIẾN'} isEditing={isEditing} onSave={handleSaveText} className="text-2xl sm:text-4xl md:text-5xl font-black leading-tight tracking-wide text-white drop-shadow-lg" as="h1" />
     <EditableText id="hero_tagline" text={customText.hero_tagline || 'Không gian sống xanh, tiện ích đồng bộ, kết nối thuận tiện và cơ hội sở hữu nhà ở với chi phí hợp lý.'} isEditing={isEditing} onSave={handleSaveText} className="text-sm md:text-base font-medium max-w-2xl text-white/80 leading-relaxed mx-auto" as="p" />
     <div className="pt-6 flex flex-col sm:flex-row gap-3 justify-center items-center">
       <button
@@ -455,7 +521,7 @@ const [positions, setPositions] = useState<any[]>(() => {
                       text={customText[`${s.id}_val`] || s.n} 
                       isEditing={isEditing} 
                       onSave={handleSaveText} 
-                      className="text-3xl font-black text-[#1a3c6e]" 
+                      className="text-2xl sm:text-3xl font-black text-[#1a3c6e]" 
                       as="div" 
                     />
                     <EditableText 
@@ -669,7 +735,7 @@ const [positions, setPositions] = useState<any[]>(() => {
             {/* Service Highlights */}
             <div className="bg-[#1a3c6e] p-8 md:p-16 rounded-3xl text-white">
                 <EditableText id="consulting_section_title" text={customText.consulting_section_title || 'ĐỒNG HÀNH CHUYÊN NGHIỆP'} isEditing={isEditing} onSave={handleSaveText} className="text-[#c9a227] font-bold uppercase tracking-widest text-xs md:text-sm mb-2" as="p" />
-                <EditableText id="consulting_section_subtitle" text={customText.consulting_section_subtitle || 'TƯ VẤN CHUYÊN NGHIỆP – ĐỒNG HÀNH TỪ HỒ SƠ ĐẾN NHẬN NHÀ'} isEditing={isEditing} onSave={handleSaveText} className="text-xl sm:text-2xl md:text-3xl md:text-4xl font-bold mb-6 leading-tight" as="h3" />
+                <EditableText id="consulting_section_subtitle" text={customText.consulting_section_subtitle || 'TƯ VẤN CHUYÊN NGHIỆP – ĐỒNG HÀNH TỪ HỒ SƠ ĐẾN NHẬN NHÀ'} isEditing={isEditing} onSave={handleSaveText} className="text-3xl md:text-4xl font-bold mb-6 leading-tight" as="h3" />
                 
                 <div className="flex flex-col lg:flex-row gap-12 items-center">
                   <div className="flex-1 space-y-8">
@@ -750,17 +816,17 @@ const [positions, setPositions] = useState<any[]>(() => {
              
              <div className="grid grid-cols-1 md:grid-cols-3 gap-6 text-center bg-[#1a3c6e] text-white p-6 md:p-10 rounded-3xl shadow-inner">
                 <div className="space-y-2">
-                   <div className="text-5xl md:text-6xl font-extrabold text-[#c9a227]">500+</div>
+                   <div className="text-3xl sm:text-4xl md:text-6xl font-extrabold text-[#c9a227]">500+</div>
                    <p className="font-bold text-lg text-amber-300">Khách hàng được tư vấn thành công</p>
                    <p className="text-xs text-blue-100 max-w-[260px] mx-auto leading-relaxed">Hồ sơ khách hàng được hỗ trợ tư vấn và hướng dẫn hoàn thiện.</p>
                 </div>
                 <div className="space-y-2 border-t md:border-t-0 md:border-x border-blue-900/40 pt-4 md:pt-0">
-                   <div className="text-5xl md:text-6xl font-extrabold text-[#c9a227]">1</div>
+                   <div className="text-3xl sm:text-4xl md:text-6xl font-extrabold text-[#c9a227]">1</div>
                    <p className="font-bold text-lg text-amber-300">Dự án trọng điểm tại Phố Hiến</p>
                    <p className="text-xs text-blue-100 max-w-[260px] mx-auto leading-relaxed">Dự án Nhà ở xã hội trọng điểm đang được giới thiệu tại Phố Hiến.</p>
                 </div>
                 <div className="space-y-2 border-t md:border-t-0 border-[#1a3c6e] pt-4 md:pt-0">
-                   <div className="text-5xl md:text-6xl font-extrabold text-[#c9a227]">100%</div>
+                   <div className="text-3xl sm:text-4xl md:text-6xl font-extrabold text-[#c9a227]">100%</div>
                    <p className="font-bold text-lg text-amber-300">Hỗ trợ thủ tục pháp lý miễn phí</p>
                    <p className="text-xs text-blue-100 max-w-[260px] mx-auto leading-relaxed">Miễn phí tư vấn thông tin, điều kiện mua và quy trình hồ sơ.</p>
                 </div>
@@ -842,7 +908,7 @@ const [positions, setPositions] = useState<any[]>(() => {
                                 </span>
                               </div>
 
-                              <h4 className="text-3xl font-bold text-[#1a3c6e]">{p.name}</h4>
+                              <h4 className="text-xl sm:text-2xl md:text-3xl font-bold text-[#1a3c6e]">{p.name}</h4>
                               <p className="text-gray-500 font-semibold text-sm -mt-2">📍 Địa điểm: {p.address}</p>
                               
                               <div className="bg-slate-50 p-4 rounded-2xl border border-slate-100/50">
@@ -1859,8 +1925,13 @@ const [positions, setPositions] = useState<any[]>(() => {
 
         // Combine standard form leads with chatbot leads for display
         const getUnifiedLeadsList = () => {
-          const chatBotS = localStorage.getItem('chatBotLeads');
-          const list2 = chatBotS ? JSON.parse(chatBotS) : [];
+          let list2: any[] = [];
+          try {
+            const chatBotS = localStorage.getItem('chatBotLeads');
+            list2 = chatBotS ? JSON.parse(chatBotS) : [];
+          } catch {
+            list2 = [];
+          }
           
           const formattedChatLeads = list2.map((c: any, i: number) => ({
             id: `chatbot_${i}_${c.date}`,
@@ -1892,16 +1963,20 @@ const [positions, setPositions] = useState<any[]>(() => {
           if (!window.confirm("Bạn có chắc chắn muốn xóa khách hàng này khỏi danh sách?")) return;
           if (id.startsWith('chatbot_')) {
             // Delete from chatbotLeads in localStorage
-            const chatBotS = localStorage.getItem('chatBotLeads');
-            if (chatBotS) {
-              const list = JSON.parse(chatBotS);
-              // Extract date from id (which is chatbot_index_date)
-              const parts = id.split('_');
-              const datePart = parts.slice(2).join('_');
-              const updated = list.filter((item: any) => item.date !== datePart);
-              localStorage.setItem('chatBotLeads', JSON.stringify(updated));
-              // Trigger state refresh
-              setCustomText(prev => ({ ...prev, '_chatbot_force_tick': Date.now().toString() }));
+            try {
+              const chatBotS = localStorage.getItem('chatBotLeads');
+              if (chatBotS) {
+                const list = JSON.parse(chatBotS);
+                // Extract date from id (which is chatbot_index_date)
+                const parts = id.split('_');
+                const datePart = parts.slice(2).join('_');
+                const updated = list.filter((item: any) => item.date !== datePart);
+                localStorage.setItem('chatBotLeads', JSON.stringify(updated));
+                // Trigger state refresh
+                setCustomText(prev => ({ ...prev, '_chatbot_force_tick': Date.now().toString() }));
+              }
+            } catch {
+              console.warn('Không thể xóa khách hàng từ chatbot leads');
             }
           } else {
             // Delete from standard leads

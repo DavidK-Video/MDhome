@@ -157,9 +157,13 @@ Trợ lý AI muốn xin thêm thông tin để tư vấn chuẩn xác nhất:
     else if (/\b(0[35789]\d{8})\b/.test(lowercaseMsg)) {
       const matchedPhone = lowercaseMsg.match(/\b(0[35789]\d{8})\b/)?.[0] || '';
       // Save lead
-      const savedLeads = JSON.parse(localStorage.getItem('chatBotLeads') || '[]');
-      savedLeads.push({ phone: matchedPhone, name: 'Khách hàng quan tâm', date: new Date().toLocaleString() });
-      localStorage.setItem('chatBotLeads', JSON.stringify(savedLeads));
+      try {
+        const savedLeads = JSON.parse(localStorage.getItem('chatBotLeads') || '[]');
+        savedLeads.push({ phone: matchedPhone, name: 'Khách hàng quan tâm', date: new Date().toLocaleString() });
+        localStorage.setItem('chatBotLeads', JSON.stringify(savedLeads));
+      } catch {
+        console.warn('Không thể lưu lead chatbot');
+      }
 
       botResponse = `Dạ tuyệt vời ạ! Hệ thống đã ghi nhận số điện thoại của Anh/Chị là: **${matchedPhone}**. 
 
@@ -190,14 +194,18 @@ Bộ phận chuyên viên tư vấn chính thức của dự án MD HOME SMART P
     if (!leadForm.phone.trim()) return;
 
     // Save lead to simulated database in localStorage
-    const savedLeads = JSON.parse(localStorage.getItem('chatBotLeads') || '[]');
-    const newLead = {
-      ...leadForm,
-      date: new Date().toLocaleString(),
-      source: 'Chatbox Smart Form'
-    };
-    savedLeads.push(newLead);
-    localStorage.setItem('chatBotLeads', JSON.stringify(savedLeads));
+    try {
+      const savedLeads = JSON.parse(localStorage.getItem('chatBotLeads') || '[]');
+      const newLead = {
+        ...leadForm,
+        date: new Date().toLocaleString(),
+        source: 'Chatbox Smart Form'
+      };
+      savedLeads.push(newLead);
+      localStorage.setItem('chatBotLeads', JSON.stringify(savedLeads));
+    } catch {
+      console.warn('Không thể lưu lead chatbot');
+    }
 
     // Clear active form and show confirmation
     setActiveFormIndex(null);
